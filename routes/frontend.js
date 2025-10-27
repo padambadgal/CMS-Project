@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 
 const siteController = require('../controllers/siteController');
+const loadCommonData = require('../middleware/loadCommonData');
+
+router.use(loadCommonData); // ✅ Middleware to be use.
 
 router.get('/', siteController.index);
 router.get('/category/:name', siteController.articleByCategories); // ✅ corrected name

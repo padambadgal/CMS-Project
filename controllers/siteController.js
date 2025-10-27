@@ -3,15 +3,14 @@ const categoryModel = require('../models/category');
 const newsModel = require('../models/news');
 const userModel = require('../models/user');
 const commentModel = require('../models/comment')
+const settingModel = require('../models/Setting');
 
 const index = async (req, res) =>{
   const news = await newsModel.find().populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
-  const categoriesInuse = await newsModel.distinct('category');
-  const categories = await categoryModel.find({_id: {$in: categoriesInuse}});
 
 
-  // res.json({news, categories});  
-  res.render('index', {news, categories});
+  // res.json({news, categories, latestNews, setting});  
+  res.render('index', {news});
 }
 const articleByCategories = async (req, res) => {
   const category = await categoryModel.findOne({slug: req.params.name});
@@ -21,20 +20,16 @@ const articleByCategories = async (req, res) => {
   } 
 
   const news = await newsModel.find({category: category._id}).populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
-  const categoriesInuse = await newsModel.distinct('category');
-  const categories = await categoryModel.find({_id: {$in: categoriesInuse}});
 
   // const categoryName = req.params.name;
   // res.render('category', { title: `Category: ${categoryName}` });
-  res.render('category',{news, categories, category});
+  res.render('category',{news, category});
 };
 const singleArticle = async (req, res) =>{
   
   const singleNews = await newsModel.findById(req.params.id).populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
-  const categoriesInuse = await newsModel.distinct('category');
-  const categories = await categoryModel.find({_id: {$in: categoriesInuse}});
 
-    res.render('single', {singleNews, categories});
+    res.render('single', {singleNews});
 }
 const search = async (req, res) =>{
   const searchQuery = req.query.search
@@ -45,9 +40,8 @@ const search = async (req, res) =>{
       {content: {$regex: searchQuery, $options: 'i'}}
     ]
   }).populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
-  const categoriesInuse = await newsModel.distinct('category');
-  const categories = await categoryModel.find({_id: {$in: categoriesInuse}});
-    res.render('search', {news, categories, searchQuery});
+
+    res.render('search', {news, searchQuery });
 }
 
 const author = async (req, res) =>{
@@ -58,9 +52,8 @@ const author = async (req, res) =>{
   }
 
   const news = await newsModel.find({author: req.params.name}).populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
-  const categoriesInuse = await newsModel.distinct('category');
-  const categories = await categoryModel.find({_id: {$in: categoriesInuse}});
-    res.render('author',  {news, categories, author});
+ 
+    res.render('author',  {news, author});
 }
 const addComment = async (req, res) =>{
     

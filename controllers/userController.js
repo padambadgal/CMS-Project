@@ -89,7 +89,7 @@ const dashboard = async (req, res, next) =>{
 
 const settings = async (req, res, next) =>{ 
   try {
-    const settings = await SettingModel.findOne(); 
+    const settings = await settingModel.findOne(); 
     res.render('admin/settings', {role: req.role, settings});
   } catch (error) {
     // console.error(error);

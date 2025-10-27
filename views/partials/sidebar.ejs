@@ -15,91 +15,25 @@
     <!-- recent posts box -->
     <div class="recent-post-container">
         <h4>Recent Posts</h4>
-        <div class="recent-post">
-            <a class="post-img" href="">
-                <img src="images/post-format.jpg" alt=""/>
-            </a>
-            <div class="post-content">
-                <h5><a href="single.html">Lorem ipsum dolor sit amet</a></h5>
-                <span>
-                    <i class="fa fa-tags" aria-hidden="true"></i>
-                    <a href='category.html'>Html</a>
-                </span>
-                <span>
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    01 Nov, 2025
-                </span>
-                <a class="read-more" href="single.html">read more</a>
+        <% latestNews.forEach(function(latestnew){ %>
+            <div class="recent-post">
+                <a class="post-img" href="/single/<%= latestnew._id %>">
+                    <img src="/uploads/<%= latestnew.image %>" alt=""/>
+                </a>
+                <div class="post-content">
+                    <h5><a href="/single/<%= latestnew._id %>"><%= latestnew.title %></a></h5>
+                    <span>
+                        <i class="fa fa-tags" aria-hidden="true"></i>
+                        <a href='/category/<%= latestnew.category.slug %>'><%= latestnew.category.name %></a>
+                    </span>
+                    <span>
+                        <i class="fa fa-calendar" aria-hidden="true"></i>
+                        <%= new Date(latestnew.createAt).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) %>
+                    </span>
+                </div>
             </div>
-        </div>
-        <div class="recent-post">
-            <a class="post-img" href="">
-                <img src="images/post_1.jpg" alt=""/>
-            </a>
-            <div class="post-content">
-                <h5><a href="single.html">Lorem ipsum dolor sit amet</a></h5>
-                <span>
-                    <i class="fa fa-tags" aria-hidden="true"></i>
-                    <a href='category.html'>Html</a>
-                </span>
-                <span>
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    01 Nov, 2025
-                </span>
-                <a class="read-more" href="single.html">read more</a>
-            </div>
-        </div>
-        <div class="recent-post">
-            <a class="post-img" href="">
-                <img src="images/post-format.jpg" alt=""/>
-            </a>
-            <div class="post-content">
-                <h5><a href="single.html">Lorem ipsum dolor sit amet</a></h5>
-                <span>
-                    <i class="fa fa-tags" aria-hidden="true"></i>
-                    <a href='category.html'>Html</a>
-                </span>
-                <span>
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    01 Nov, 2025
-                </span>
-                <a class="read-more" href="single.html">read more</a>
-            </div>
-        </div>
-        <div class="recent-post">
-            <a class="post-img" href="">
-                <img src="images/post_1.jpg" alt=""/>
-            </a>
-            <div class="post-content">
-                <h5><a href="single.html">Lorem ipsum dolor sit amet</a></h5>
-                <span>
-                    <i class="fa fa-tags" aria-hidden="true"></i>
-                    <a href='category.html'>Html</a>
-                </span>
-                <span>
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    01 Nov, 2025
-                </span>
-                <a class="read-more" href="single.html">read more</a>
-            </div>
-        </div>
-        <div class="recent-post">
-            <a class="post-img" href="">
-                <img src="images/post-format.jpg" alt=""/>
-            </a>
-            <div class="post-content">
-                <h5><a href="single.html">Lorem ipsum dolor sit amet</a></h5>
-                <span>
-                    <i class="fa fa-tags" aria-hidden="true"></i>
-                    <a href='category.html'>Html</a>
-                </span>
-                <span>
-                    <i class="fa fa-calendar" aria-hidden="true"></i>
-                    01 Nov, 2025
-                </span>
-                <a class="read-more" href="single.html">read more</a>
-            </div>
-        </div>
+        <% }); %>
+
     </div>
     <!-- /recent posts box -->
 </div>
