@@ -20,4 +20,4 @@ const loadCommonData = async (req, res, next) => {
    }
 }
 
-exports = module.exports = loadCommonData
+module.exports = loadCommonData
