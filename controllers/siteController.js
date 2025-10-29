@@ -36,10 +36,15 @@ const articleByCategories = async (req, res) => {
   res.render('category',{paginatedNews, category, query: req.query});
 };
 const singleArticle = async (req, res) =>{
-  
+
   const singleNews = await newsModel.findById(req.params.id).populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1});
 
-    res.render('single', {singleNews});
+  //Get all Comment for this article
+  const comments = await commentModel.find({  article: req.params.id, status:'approved' })
+                                    .sort('-createdAt')
+
+  // res.json({singleNews, comments})
+  res.render('single', {singleNews, comments});
 }
 const search = async (req, res) =>{
   const searchQuery = req.query.search
@@ -83,7 +88,19 @@ const author = async (req, res) =>{
     res.render('author',  {paginatedNews, author, query: req.query});
 }
 const addComment = async (req, res) =>{
-    
+  try {
+    const {  name, email, content } = req.body;
+    const comment = new commentModel({
+      name,
+      email,
+      content,
+      article: req.params.id
+    });
+    await comment.save();
+    res.redirect(`/single/${req.params.id}`);
+  } catch (error) {
+    res.status(500).send('Server Error');
+  }
 }
 
 module.exports = {
