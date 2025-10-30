@@ -65,7 +65,18 @@
       height: 200
     });
   });
+
+  //Code to remove field 'file' from the form
+document.querySelector('form').addEventListener('submit', function(event) {
+    const unwantedField = document.querySelector('input[name="files"]');
+
+    if (unwantedField) {
+        unwantedField.remove();
+    }
+})
 </script>
+
+
 
 <%- contentFor('summernoteCSS') %>
  <link href="https://cdn.jsdelivr.net/npm/summernote@0.8.20/dist/summernote-lite.min.css" rel="stylesheet">

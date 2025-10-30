@@ -18,13 +18,14 @@
         </div>
         <img class="single-feature-image" src="/uploads/<%= singleNews.image %>" alt=""/>
         <div>
-            <%= singleNews.content.replace(/<[^>]*>/g, '')%>
+            <%- singleNews.content%>
         </div>
     </div>
     </div>
     <!-- /post-container -->
 
     <!-- Comments Section -->
+    
     <div class="comments-section mt-5">
     <h3>Comments</h3>
     

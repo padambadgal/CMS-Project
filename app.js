@@ -5,7 +5,9 @@ const path = require('path');
 const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+const minifyHTML = require('express-minify-html-terser');
 const flash = require('connect-flash');
+const compression = require('compression');
 const port = 3000;
 const app = express();
 
@@ -19,13 +21,37 @@ mongoose.connect(process.env.MONGODB_URI)
 // --------------------
 // ⚙️ Middleware Setup
 // --------------------
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({limit: '10mb'}));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d'}));
 app.use(cookieParser());
 app.use(expressLayouts);
-
 app.set('layout', 'layout');
+app.use(compression({
+  level: 9,
+  threshold: 10 * 1024,
+  filter: (req, res) => {
+    if (req.headers['x-no-compression']) {
+      return false;
+    }
+    return compression.filter(req, res);
+  }
+}));
+
+app.use(minifyHTML({
+    override:      true,
+    exception_url: false,
+    htmlMinifier: {
+        removeComments:            true,
+        collapseWhitespace:        true,
+        collapseBooleanAttributes: true,
+        removeAttributeQuotes:     true,
+        removeEmptyAttributes:     true,
+        minifyJS:                  true
+    }
+}));
+
+//View Engine
 app.set('view engine', 'ejs');
 
 // --------------------
@@ -54,7 +80,6 @@ const frontendRoutes = require('./routes/frontend');
 const adminRoutes = require('./routes/admin');
 
 // Frontend routes
-app.use('/', frontendRoutes);
 
 // Admin layout middleware (before admin routes)
 app.use('/admin', (req, res, next) => {
@@ -64,6 +89,8 @@ app.use('/admin', (req, res, next) => {
 
 // Admin routes
 app.use('/admin', adminRoutes);
+
+app.use('/', frontendRoutes);
 
 // --------------------
 // 🚀 Server Start

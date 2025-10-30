@@ -80,12 +80,6 @@ router.use(isLoggedIn, (err, req, res, next) => {
         role: req.role
     })
 });
-// router.use(isLoggedIn, (err, req, res, next) => {
-//     console.error(err.stack)
-//     res.status(500).render('admin/500',{    
-//         message: err.message || 'Internal server error' ,
-//         role: req.role
-//     })
-// });
+
 
 module.exports = router;

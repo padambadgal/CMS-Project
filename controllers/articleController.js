@@ -30,33 +30,36 @@ const addUserArticle = async (req, res) =>{
     const categories = await categoryModel.find();
     res.render('admin/articles/create', {role: req.role,categories, errors: 0});
 }
-const addArticle = async (req, res, next) =>{ 
-    const errors = validationResult(req)
-      if(!errors.isEmpty()){
-        const categories = await categoryModel.find();
-       return res.render('admin/articles/create', {
-        categories,
-        role: req.role,
-        errors: errors.array()
-        })  
-    } 
-    try {
-    const {title, content, category} = req.body;
-    const article = new newsModel({
-        title,
-        content,
-        category,
-        author: req.id, // ✅ Works now        
-        image: req.file.filename
+const addArticle = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    const categories = await categoryModel.find();
+    return res.render('admin/articles/create', {
+      categories,
+      role: req.role,
+      errors: errors.array(),
     });
-        await article.save();
-        res.redirect('/admin/article');
-    } catch (error) {
-        // console.log(error);
-        // res.status(500).send('Article not save');
-        next(error);
-    }
-}
+  }
+
+  try {
+    const { title, content, category } = req.body;
+
+    const article = new newsModel({
+      title,
+      content,
+      category,
+      author: req.id,
+      image: req.file ? req.file.filename : null, // safe check
+    });
+
+    await article.save();
+    res.redirect('/admin/article');
+  } catch (error) {
+    console.log('Article save error:', error);
+    next(error);
+  }
+};
+
 const updateArticlePage = async (req, res, next) =>{ 
     const id = req.params.id;
     try {

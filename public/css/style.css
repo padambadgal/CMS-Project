@@ -191,6 +191,10 @@ img.logo{
 .delete{
   text-align:center;
 }
+.note-editor.note-frame.fullscreen{
+  background-color: white;
+  
+}
 
 /* ===================== */
 /* ADMIN Panel CSS END */
