@@ -1,30 +1,50 @@
-<% const news = paginatedNews.data %> 
-<% news.forEach(function(article) { %>
-<% if(!article.category || !article.author) return; %>
+<% 
+// Check if paginatedNews exists and has data
+const news = paginatedNews && paginatedNews.data ? paginatedNews.data : []; 
+%>
+
+<% if (news.length === 0) { %>
+    <div class="alert alert-info">
+        <h4>No articles found</h4>
+        <p>There are currently no articles to display. Please check back later.</p>
+        <% if (typeof paginatedNews !== 'undefined') { %>
+            <pre><%= JSON.stringify(paginatedNews, null, 2) %></pre>
+        <% } %>
+    </div>
+<% } else { %>
+    <% news.forEach(function(article) { %>
+        <% if(!article.category || !article.author) { %>
+            <div class="alert alert-warning">
+                Article "<%= article.title %>" has missing category or author data
+            </div>
+            <% return; %>
+        <% } %>
         <div class="post-content">
             <div class="row">
                 <div class="col-md-4">
-                    <a class="post-img" href="/single/<%= article._id %>"><img src="/uploads/<%= article.image %>" alt=""/></a>
+                    <a class="post-img" href="/single/<%= article._id %>">
+                        <img src="/uploads/<%= article.image %>" alt="<%= article.title %>"/>
+                    </a>
                 </div>
                 <div class="col-md-8">
                     <div class="inner-content clearfix">
-                <h3><a href='/single/<%= article._id %>'><%= article.title %></a></h3>
+                        <h3><a href='/single/<%= article._id %>'><%= article.title %></a></h3>
                         <div class="post-information">
                             <span>
                                 <i class="fa fa-tags" aria-hidden="true"></i>
                                 <a href='/category/<%= article.category.slug %>'><%= article.category.name %></a>
                             </span>
                             <span>
-                                <i class="fa fa-user" aria-shidden="true"></i>
+                                <i class="fa fa-user" aria-hidden="true"></i>
                                 <a href='/author/<%= article.author._id %>'><%= article.author.fullname %></a>
                             </span>
                             <span>
                                 <i class="fa fa-calendar" aria-hidden="true"></i>
-                                <%= new Date( article.createAt ).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) %>
+                                <%= new Date(article.createAt).toLocaleDateString('en-GB', {day: '2-digit', month: 'short', year: 'numeric'}) %>
                             </span>
                         </div>
                         <p class="description">
-                            <%= article.content.replace(/<[^>]*>/g, '').substring(0, 30) + '...'%>
+                            <%= article.content.replace(/<[^>]*>/g, '').substring(0, 150) + '...' %>
                         </p>
                         <a class='read-more pull-right' href='/single/<%= article._id %>'>read more</a>
                     </div>
@@ -32,21 +52,23 @@
             </div>
         </div>
     <% }); %>
+<% } %>
 
-    <% 
-        function buildQuery(query, page){
-            const params = new URLSearchParams(query);
-            params.set('page', page);
-            return '?' + params.toString();
-        }
-     %> 
+<!-- Pagination -->
+<% 
+function buildQuery(query, page){
+    const params = new URLSearchParams(query);
+    params.set('page', page);
+    return '?' + params.toString();
+}
+%> 
 
-    
-    <nav>
+<% if (paginatedNews && paginatedNews.totalPages > 1) { %>
+<nav>
     <ul class="pagination">
         <% if(paginatedNews.hasPrevPage) { %> 
         <li class="page-item">
-            <a class="page-link" href="<%= buildQuery(query,paginatedNews.prevPage) %>">Previous</a>
+            <a class="page-link" href="<%= buildQuery(query, paginatedNews.prevPage) %>">Previous</a>
         </li>
         <% } else { %> 
         <li class="page-item disabled">
@@ -54,15 +76,15 @@
         </li>
         <% } %> 
 
-        <% for(let  i = 1; i <= paginatedNews.totalPages; i++) { %>
+        <% for(let i = 1; i <= paginatedNews.totalPages; i++) { %>
         <li class="page-item <%= paginatedNews.currentPage === i ? 'active' : ''  %> ">
-            <a class="page-link" href="<%= buildQuery(query,i) %>"><%= i %></a>
+            <a class="page-link" href="<%= buildQuery(query, i) %>"><%= i %></a>
         </li>
         <% } %>
 
         <% if(paginatedNews.hasNextPage) { %> 
         <li class="page-item">
-            <a class="page-link" href="<%= buildQuery(query,paginatedNews.nextPage) %>">Next</a>
+            <a class="page-link" href="<%= buildQuery(query, paginatedNews.nextPage) %>">Next</a>
         </li>
         <% } else { %> 
         <li class="page-item disabled">
@@ -70,4 +92,5 @@
         </li>
         <% } %>
     </ul>
-    </nav>
+</nav>
+<% } %>

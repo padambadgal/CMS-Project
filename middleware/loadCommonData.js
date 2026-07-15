@@ -6,32 +6,62 @@ const nodeCache = require('node-cache');
 const cache = new nodeCache();
 
 const loadCommonData = async (req, res, next) => {
-    try{
+    try {
+        console.log('🔄 loadCommonData called');
+        
         let latestNews = cache.get('latestNewsCache');
         let categories = cache.get('categoriesCache');
         let setting = cache.get('settingCache');
 
-        if(latestNews === undefined || categories === undefined || setting === undefined){
+        if (latestNews === undefined || categories === undefined || setting === undefined) {
+            console.log('📦 Cache miss - fetching from database');
+            
+            // Get setting
+            setting = await settingModel.findOne().lean() || {};
+            console.log('⚙️ Setting loaded:', setting);
 
-            setting = await settingModel.findOne().lean();
-    
-            latestNews = await newsModel.find().populate('category',{'name':1, 'slug':1}).populate('author','fullname').sort({createAt: -1}).limit(5).lean();
-           
+            // Get latest news with proper population
+            latestNews = await newsModel.find()
+                .populate('category', 'name slug')
+                .populate('author', 'fullname')
+                .sort({ createAt: -1 })
+                .limit(5)
+                .lean();
+            console.log('📰 Latest News count:', latestNews ? latestNews.length : 0);
+
+            // Get categories that have articles
             const categoriesInUse = await newsModel.distinct('category');
-            categories = await categoryModel.find({_id: {$in: categoriesInUse}}).lean();
+            console.log('📁 Categories in use:', categoriesInUse);
+            
+            categories = await categoryModel.find({ 
+                _id: { $in: categoriesInUse } 
+            }).lean();
+            console.log('📁 Categories count:', categories ? categories.length : 0);
 
-            if(setting) cache.set('settingCache', setting, 3600);
-            cache.set('latestNewsCache', latestNews, 3600);
-            cache.set('categoriesCache', categories, 3600);
+            // Cache the data
+            if (setting) cache.set('settingCache', setting, 3600);
+            if (latestNews) cache.set('latestNewsCache', latestNews, 3600);
+            if (categories) cache.set('categoriesCache', categories, 3600);
+        } else {
+            console.log('💾 Cache hit - using cached data');
         }
 
+        // Make data available to all views
         res.locals.setting = setting || {};
         res.locals.latestNews = latestNews || [];
         res.locals.categories = categories || [];
+        
+        console.log('✅ loadCommonData completed');
         next();
-    }catch(err){
-        next(err) 
-   }
-}
+    } catch (err) {
+        console.error('❌ loadCommonData Error:', err);
+        console.error('Stack:', err.stack);
+        // Set empty data so the app doesn't crash
+        res.locals.setting = {};
+        res.locals.latestNews = [];
+        res.locals.categories = [];
+        next(err);
+    }
+};
 
-module.exports = loadCommonData
+module.exports = loadCommonData;
