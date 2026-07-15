@@ -1,5 +1,6 @@
-<% news = paginatedNews.data %> 
+<% const news = paginatedNews.data %> 
 <% news.forEach(function(article) { %>
+<% if(!article.category || !article.author) return; %>
         <div class="post-content">
             <div class="row">
                 <div class="col-md-4">

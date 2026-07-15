@@ -11,7 +11,7 @@ const imageUpload = require('../middleware/multer');
 const isValid = require('../middleware/validation') ;
 
 //Login Routes
-router.get('/', userController.loginPage);
+router.get('/login', userController.loginPage);
 router.post('/index', isValid.loginValidation, userController.adminLogin);
 router.get('/logout', userController.logout);
 router.get('/dashboard', isLoggedIn, userController.dashboard);

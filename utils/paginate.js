@@ -5,7 +5,7 @@ const paginate = async (model, query= {}, reqQuery = {}, options ={}) =>{
 
     const  paginationOptions = {
         page : parseInt(page),
-        limt : parseInt(limit),
+        limit : parseInt(limit),
         sort,
         ...options
     }

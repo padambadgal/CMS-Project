@@ -16,6 +16,7 @@
     <div class="recent-post-container">
         <h4>Recent Posts</h4>
         <% latestNews.forEach(function(latestnew){ %>
+            <% if(!latestnew.category || !latestnew.author) return; %>
             <div class="recent-post">
                 <a class="post-img" href="/single/<%= latestnew._id %>">
                     <img src="/uploads/<%= latestnew.image %>" alt=""/>
